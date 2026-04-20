@@ -85,7 +85,9 @@ The short half-life drug (1.5 h) shows a pronounced time-of-day efficacy pattern
 
 Quantifies how each noise source independently affects statistical power, anchored to the original TIME study sample size.
 
-**Calibration assumption:** The TIME study was designed with N ≈ 9,849 per arm at 80% power (α = 0.05, two-sided). Back-calculating from this N and the 20% baseline efficacy gap (Δ = 0.200) implies an outcome standard deviation of σ₀ ≈ 5.01, representing large between-subject variability in the clinical endpoint. Each noise source is then evaluated by how much it shrinks the observable group-mean difference (Δ_observed); required N scales as (Δ₀ / Δ_observed)².
+**Calibration assumption:** The TIME study's sample size was not derived from a continuous outcome power calculation. The trial was powered to observe 631 adjudicated cardiovascular events (80% power to detect a 20% hazard rate reduction, α = 0.05), with N inflated from an initial target of ~10,269 to ~20,000 because event rates in similar trials came in lower than expected. The enrolled arm sizes (9,849 AM / 9,537 PM) therefore reflect event-rate considerations, not a t-test on a continuous efficacy measure.
+
+To anchor the power analysis to these Ns, we back-calculate the outcome standard deviation that would make N = 9,849 per arm correspond to exactly 80% power for a two-sample t-test detecting Δ = 0.200: this gives σ₀ ≈ 5.01. This is a modeling construct, not a measured quantity from the TIME study. The analysis is best interpreted in relative terms — each noise source is shown as a multiplier on the required N — rather than as absolute sample size recommendations. Required N scales as (Δ₀ / Δ_observed)².
 
 **Scenarios (each evaluated independently):**
 
