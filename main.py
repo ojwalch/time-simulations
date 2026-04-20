@@ -1,4 +1,5 @@
 from enum import Enum
+import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -7,6 +8,9 @@ import matplotlib.font_manager as font_manager
 from matplotlib.ticker import FuncFormatter
 
 from matplotlib import rcParams
+
+np.random.seed(42)
+os.makedirs("output", exist_ok=True)
 
 rcParams['font.family'] = 'Arial'
 rcParams['font.size'] = 12
@@ -24,11 +28,11 @@ pm_color = "#000080"
 
 morning_efficacy = 0.8
 evening_efficacy = 1.0
-morning_group = 9849
-evening_group = 9537
+morning_group = 9849  # From TIME study
+evening_group = 9537  # From TIME study
 
-morning_timing_nonadherence_rate = 0.225
-evening_timing_nonadherence_rate = 0.39
+morning_timing_nonadherence_rate = 0.225  # From TIME study
+evening_timing_nonadherence_rate = 0.39  # From TIME study
 
 adherence_related_efficacy_loss = 0.07
 
@@ -267,7 +271,6 @@ def rk4_step(func, y, t, dt, *args):
 
 
 def system(y, t, k1, k2, k3):
-    # System of equations for the DNA damage and repaid
     drug, target, interaction = y
     dDrug = -k1 * drug  # decay rate of Z after the pulse
     dTarget = np.sin(t * (2 * np.pi) / 24)  # Assumed oscillatory target
@@ -338,7 +341,7 @@ def solve_system(step_size=1, want_individual_plots=True):
         plt.legend(frameon=False)
         plt.savefig(
             "output/Effect of half-life on time of day efficacy.png", dpi=300)
-        plt.show()
+        plt.close()
 
 
 def plot_single_pulse_time(time_points, solution, pulse_time, half_life):
@@ -454,10 +457,7 @@ def plot_efficacy(ax, x, y, color=[0, 0, 0, 0.3], linewidth=2, want_dots=False, 
 
         percent_difference = (
             (dot_y_values[1] - dot_y_values[0]) / dot_y_values[0]) * 100
-
-        txt_string = f"{int(np.round(percent_difference))}% observed\nAM/PM difference"
-        annotation_font_size = 11
-        x_loc = 28
+        
         txt_string = f"{int(np.round(percent_difference))}%"
         annotation_font_size = 20
 
