@@ -1,7 +1,6 @@
 from enum import Enum
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats as stats
 import matplotlib.patches as patches
 import matplotlib.gridspec as gridspec
 import matplotlib.font_manager as font_manager
@@ -54,10 +53,10 @@ def run_trial(subject_count, strategy, noise_sigma=0):
 def run_trial_with_nonadherence_to_time(subject_count, strategy, noise_sigma=0):
     all_efficacies = []
 
-    # Assume they switch at some random point in the first quarter of the trial
-    change_point = 0.25 * np.random.rand()
-
     for subject in range(subject_count):
+        # Assume they switch at some random point in the first quarter of the trial
+        change_point = 0.25 * np.random.rand()
+
         if strategy == TimingStrategy.MORNING:
             if np.random.rand() < morning_timing_nonadherence_rate:
                 efficacy_for_person = morning_efficacy * change_point + evening_efficacy * \
@@ -84,10 +83,10 @@ def run_trial_with_nonadherence_to_time(subject_count, strategy, noise_sigma=0):
 def run_trial_with_nonadherence_to_time_and_drug(subject_count, strategy, noise_sigma=0):
     all_efficacies = []
 
-    # Assume they switch at some random point in the first quarter of the trial
-    change_point = 0.25 * np.random.rand()
-
     for subject in range(subject_count):
+        # Assume they switch at some random point in the first quarter of the trial
+        change_point = 0.25 * np.random.rand()
+
         if strategy == TimingStrategy.MORNING:
             if np.random.rand() < morning_timing_nonadherence_rate:
                 efficacy_for_person = morning_efficacy * change_point + evening_efficacy * \
@@ -128,6 +127,7 @@ def simulate_perfect_adherence():
               evening_doser_efficacies, title=title)
     plt.tight_layout()
     plt.savefig(f"output/{title}.png", dpi=300)
+    plt.close()
 
     print(np.mean(morning_doser_efficacies))
     print(np.mean(evening_doser_efficacies))
@@ -145,6 +145,7 @@ def simulate_nonadherence_to_time():
               evening_doser_efficacies, title=title)
     plt.tight_layout()
     plt.savefig(f"output/{title}.png", dpi=300)
+    plt.close()
 
     print(np.mean(morning_doser_efficacies))
     print(np.mean(evening_doser_efficacies))
@@ -162,6 +163,7 @@ def simulate_nonadherence_to_time_and_drug():
               evening_doser_efficacies, title=title)
     plt.tight_layout()
     plt.savefig(f"output/{title}.png", dpi=300)
+    plt.close()
 
     print(np.mean(morning_doser_efficacies))
     print(np.mean(evening_doser_efficacies))
@@ -654,8 +656,8 @@ def make_bar_plots_for_different_strategies(evening_optimal_amplitude,
 
 if __name__ == '__main__':
     plot_hypothetical_efficacies()
-    # simulate_perfect_adherence()
-    # simulate_nonadherence_to_time()
-    # simulate_nonadherence_to_time_and_drug()
-    # make_prior_dosing_history_figure()
-    # make_half_life_figure()
+    simulate_perfect_adherence()
+    simulate_nonadherence_to_time()
+    simulate_nonadherence_to_time_and_drug()
+    make_prior_dosing_history_figure()
+    make_half_life_figure()
