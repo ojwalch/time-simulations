@@ -4,7 +4,7 @@ Simulation code accompanying a paper currently under review. These simulations i
 
 ## Background
 
-Chronotherapy proposes that the time of day a drug is taken affects its efficacy, because many drug targets are under circadian control. In practice, detecting AM vs. PM dosing differences is difficult: patients have different circadian phases (DLMO heterogeneity), don't always adhere to their assigned dosing time, and drugs with long half-lives average out time-of-day sensitivity. These simulations make those mechanisms concrete and quantify their effect on statistical power.
+Chronotherapy proposes that the time of day a drug is taken affects its efficacy, because many drug targets are under circadian control. In practice, detecting AM vs. PM dosing differences is difficult: patients have different circadian phases (DLMO heterogeneity), don't always adhere to their assigned dosing time, and drugs with long half-lives average out time-of-day sensitivity. These simulations attempt to quantify the effects of these factors on observed effect size (and needed statistical power).
 
 Sample sizes and nonadherence rates are drawn from the TIME study:
 - AM arm: N = 9,849
@@ -65,7 +65,7 @@ Nonadherent subjects are modeled as switching at a random point within the first
 | `Evening_Optimal_Bar_Plot.png` | Efficacy by chronotype (early/late) for the evening-optimal curve |
 | `Midday_Optimal_Bar_Plot.png` | Efficacy by chronotype (early/late) for the midday-optimal curve |
 
-**Prior dosing history** — illustrates how a subject's dosing history before trial enrollment affects their observed efficacy in the PM arm, as a function of the fraction of pre-trial AM dosing.
+**Prior dosing history** — illustrates how a subject's dosing history before trial enrollment could possibly affect their observed efficacy in the PM arm, as a function of the fraction of pre-trial AM dosing.
 
 | Figure | Description |
 |---|---|
@@ -105,6 +105,3 @@ DLMO heterogeneity uses the evening-optimal sinusoidal efficacy curve from `main
 | `power_at_original_N.png` | Statistical power of each scenario at the original N = 9,849 |
 | `n_needed_per_scenario.png` | N per arm required to restore 80% power under each noise source |
 
-## Reproducibility
-
-Both scripts set `numpy.random.seed(42)` at import time. All output figures are deterministic given this seed.
