@@ -161,12 +161,12 @@ def simulate_nonadherence_to_time_and_drug():
     evening_doser_efficacies = run_trial_with_nonadherence_to_time_and_drug(
         evening_group, TimingStrategy.EVENING)
 
-    title = "Nonadherent to time and drug"
+    title = "Nonadherent to\ntime and drug"
     fig, ax = plt.subplots()
     plot_bars(ax, morning_doser_efficacies,
               evening_doser_efficacies, title=title)
     plt.tight_layout()
-    plt.savefig(f"output/{title}.png", dpi=300)
+    plt.savefig("output/Nonadherent to time and drug.png", dpi=300)
     plt.close()
 
     print(np.mean(morning_doser_efficacies))
@@ -194,7 +194,7 @@ def plot_bars(ax, morning_doser_efficacies, evening_doser_efficacies, title="", 
             ha='center', va='bottom', color='white', fontsize=font_size)
 
     # Setting labels and styles
-    ax.set_ylabel('Effectiveness', fontsize=tick_font_size, fontname='Arial')
+    ax.set_ylabel('Observed\nEfficacy', fontsize=24, fontname='Arial', labelpad=12)
     ax.set_xticks([0, 1])
     ax.set_xticklabels(['AM', 'PM'], fontname='Arial',
                        fontsize=label_font_size)
@@ -207,7 +207,7 @@ def plot_bars(ax, morning_doser_efficacies, evening_doser_efficacies, title="", 
     ax.set_title(title, fontname='Arial', fontsize=title_font_size)
 
 
-def draw_prior_dosing(ax, am_pct, draw_legend=False):
+def draw_prior_dosing(ax, am_pct, draw_legend=False, draw_time_arrow=False):
     trial_start = [0.7, 0.4, 0.9]
     drug_start = [0.6, 0.8, 0.3]
     x_start = 0.4
@@ -231,6 +231,14 @@ def draw_prior_dosing(ax, am_pct, draw_legend=False):
     if draw_legend:
         ax.legend(bbox_to_anchor=(1.0, -0.1), prop=font_props)
 
+    if draw_time_arrow:
+        arrow_tip = x_start + 1.0
+        arrow_tail = arrow_tip - 0.22
+        ax.annotate('', xy=(arrow_tip, 0.05), xytext=(arrow_tail, 0.05),
+                    arrowprops=dict(arrowstyle='->', color='black', lw=1.0, mutation_scale=8))
+        ax.text(arrow_tail - 0.02, 0.05, 'Time', ha='right', va='center',
+                fontname='Arial', fontsize=14)
+
     ax.axis('off')
 
 
@@ -242,10 +250,18 @@ def make_prior_dosing_history_figure():
     evening_efficacies_weighted = [
         am_pct * morning_efficacy + (1 - am_pct) * evening_efficacy for am_pct in am_pcts]
 
+    condition_titles = [
+        "Trial and drug start at same time:",
+        "Trial starts after moderate duration on drug:",
+        "Trial starts after significant duration on drug:",
+    ]
+
     # Drawing and plotting in the grids
     for i, am_pct in enumerate(am_pcts):
         ax1 = fig.add_subplot(gs[i, 0])
-        draw_prior_dosing(ax1, am_pct, draw_legend=i == 2)
+        ax1.set_title(condition_titles[i], loc='left', fontsize=18,
+                      fontweight='bold', fontname='Arial', pad=6)
+        draw_prior_dosing(ax1, am_pct, draw_legend=i == 2, draw_time_arrow=i == 0)
         ax2 = fig.add_subplot(gs[i, 1])
         plot_bars(ax2, morning_efficacy,
                   evening_efficacies_weighted[i], draw_xlabel=i == 2)
@@ -355,20 +371,19 @@ def plot_single_pulse_time(time_points, solution, pulse_time, half_life):
     ax[2].plot(time_points, solution[:, 2],
                label='Interaction', color=interaction_color)
 
+    for a in ax:
+        a.set_xlim([0, 72])
+        a.spines['top'].set_visible(False)
+        a.spines['right'].set_visible(False)
+
     ax[0].set_xlabel('Time (hours)')
     ax[0].set_ylabel('Amount of \ndrug (a.u.)', fontsize=12)
-    ax[0].spines['top'].set_visible(False)
-    ax[0].spines['right'].set_visible(False)
 
     ax[1].set_xlabel('Time (hours)')
     ax[1].set_ylabel('Amount of \nTarget (a.u.)', fontsize=12)
-    ax[1].spines['top'].set_visible(False)
-    ax[1].spines['right'].set_visible(False)
 
     ax[2].set_xlabel('Time (hours)')
     ax[2].set_ylabel('Amount of \ninteraction (a.u.)', fontsize=12)
-    ax[2].spines['top'].set_visible(False)
-    ax[2].spines['right'].set_visible(False)
 
     # ax[0].set_title("Dosing " + str(pulse_time) +
     #                 " hrs after target minimum", fontsize=12)
@@ -402,7 +417,7 @@ def plot_distribution_of_dlmos_and_efficacy(mean, standard_deviation, amplitude,
     n, bins, patches = ax.hist(dlmos, color=color)
 
     ax.set_xlabel('DLMO (hours after midnight)', fontsize=26)
-    ax.set_ylabel('Count', fontsize=18)
+    ax.set_ylabel('Count', fontsize=22)
 
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -443,8 +458,8 @@ def efficacy_curve(x, amplitude, vertical_shift, phase_shift):
     return amplitude * np.sin(2 * np.pi / period * (x - phase_shift)) + vertical_shift
 
 
-def plot_efficacy(ax, x, y, color=[0, 0, 0, 0.3], linewidth=2, want_dots=False, label=""):
-    ax.plot(x, y, label='Effectiveness', color=color, linewidth=linewidth)
+def plot_efficacy(ax, x, y, color=[0, 0, 0, 0.3], linewidth=2, want_dots=False, label="", ylabel='Observed\nEfficacy'):
+    ax.plot(x, y, label=ylabel, color=color, linewidth=linewidth)
 
     if want_dots:
         dot_locations = [8, 22]
@@ -489,7 +504,7 @@ def plot_efficacy(ax, x, y, color=[0, 0, 0, 0.3], linewidth=2, want_dots=False, 
     ax.set_xlim(0, 24)
     ax.set_ylim(0, 1.03)
     ax.set_xlabel('Wall clock time (hours after midnight)', fontsize=18)
-    ax.set_ylabel('Effectiveness', fontsize=18)
+    ax.set_ylabel(ylabel, fontsize=18, labelpad=12)
     ax.tick_params(axis='x', labelsize=14)
     ax.tick_params(axis='y', labelsize=14)
 
@@ -532,7 +547,7 @@ def plot_hypothetical_efficacies():
                        vertical_shift=evening_optimal_vertical_shift,
                        phase_shift=evening_optimal_phase_shift)
     plot_efficacy(ax, x, y, color=evening_optimal_color,
-                  want_dots=True, label="Evening optimal,")
+                  want_dots=True, label='Evening optimal,', ylabel='Efficacy')
     plt.tight_layout()
     plt.savefig("output/Evening optimal efficacy curve.png", dpi=300)
 
@@ -546,7 +561,7 @@ def plot_hypothetical_efficacies():
                        vertical_shift=midday_optimal_vertical_shift,
                        phase_shift=midday_optimal_phase_shift)
     plot_efficacy(ax, x, y, color=midday_optimal_color,
-                  want_dots=True,  label="Midday optimal,")
+                  want_dots=True, label="Midday optimal,", ylabel='Efficacy')
     plt.tight_layout()
     fig.set_size_inches(6, 6)
     plt.savefig("output/Two hypothetical efficacy curves.png", dpi=300)
@@ -613,15 +628,15 @@ def make_bar_plots_for_different_strategies(evening_optimal_amplitude,
         late_pm_time, midday_optimal_amplitude, midday_optimal_vertical_shift, midday_optimal_phase_shift)
 
     # Plot bar chart for evening optimal curve
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 5))
     ax.bar([0, 2], [early_am_efficacy_evening, early_pm_efficacy_evening],
            color=am_color, label="AM Dosing")
     ax.bar([1, 3], [late_am_efficacy_evening, late_pm_efficacy_evening],
            color=pm_color, label="PM Dosing")
     ax.set_xticks([0, 1, 2, 3])
     ax.set_xticklabels(
-        ["Early\nChronotype", "Early\nChronotype", "Late\nChronotype", "Late\nChronotype"], fontsize=16)
-    ax.set_ylabel("Effectiveness", fontsize=20)
+        ["Early\nChronotype", "Early\nChronotype", "Late\nChronotype", "Late\nChronotype"], fontsize=12)
+    ax.set_ylabel("Observed\nEfficacy", fontsize=24, labelpad=12)
     ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
     ax.set_yticklabels([0, 0.2, 0.4, 0.6, 0.8, 1], fontsize=24)
     # ax.set_title("Evening Optimal Curve")
@@ -633,15 +648,15 @@ def make_bar_plots_for_different_strategies(evening_optimal_amplitude,
     plt.close()
 
     # Plot bar chart for midday optimal curve
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 5))
     ax.bar([0, 2], [early_am_efficacy_midday, early_pm_efficacy_midday],
            color=am_color, label="AM Dosing")
     ax.bar([1, 3], [late_am_efficacy_midday, late_pm_efficacy_midday],
            color=pm_color, label="PM Dosing")
     ax.set_xticks([0, 1, 2, 3])
     ax.set_xticklabels(
-        ["Early\nChronotype", "Early\nChronotype", "Late\nChronotype", "Late\nChronotype"], fontsize=16)
-    ax.set_ylabel("Effectiveness", fontsize=20)
+        ["Early\nChronotype", "Early\nChronotype", "Late\nChronotype", "Late\nChronotype"], fontsize=12)
+    ax.set_ylabel("Observed\nEfficacy", fontsize=24, labelpad=12)
     ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
     ax.set_yticklabels([0, 0.2, 0.4, 0.6, 0.8, 1], fontsize=24)
 
